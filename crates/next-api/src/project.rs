@@ -863,10 +863,11 @@ impl Project {
             match route {
                 Route::Page {
                     html_endpoint,
-                    data_endpoint: _,
+                    data_endpoint,
                 } => {
                     if !app_dir_only {
                         endpoints.push(*html_endpoint);
+                        endpoints.push(*data_endpoint);
                     }
                 }
                 Route::PageApi { endpoint } => {
@@ -905,7 +906,7 @@ impl Project {
             .get_all_endpoints(false)
             .await?
             .iter()
-            .map(async |endpoint| Ok(endpoint.entries().owned().await?))
+            .map(|endpoint| endpoint.entries().owned())
             .try_flat_join()
             .await?;
         modules.extend(self.client_main_modules().await?.iter().cloned());
